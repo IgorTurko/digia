@@ -1,0 +1,19 @@
+.UserList {
+    &__addForm {
+        padding: 15px;
+    }
+
+    &__tableWrapper {
+        margin-top: 30px;
+    }
+
+    &__actionsCell {
+        > * {
+            cursor: pointer;
+        }
+
+        > *:first-child {
+            margin-right: 10px;
+        }
+    }
+}
