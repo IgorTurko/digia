@@ -2,20 +2,18 @@ import * as React from "react";
 import TextField from "material-ui/TextField";
 import Button from "material-ui/Button";
 
-import { UserModel } from "../models/user";
-
 import "./UserForm.css";
 
 interface UserFormProps {
-    user?: UserModel;
+    user?: User;
     isEdit?: boolean;
 
-    onSave?(user: UserModel): any;
+    onSave?(user: User): any;
     onCancel?(): any;
 }
 
 interface UserFormState {
-    toEdit: UserModel;
+    toEdit: User;
 }
 
 export class UserForm extends React.Component<UserFormProps, UserFormState> {
@@ -23,7 +21,8 @@ export class UserForm extends React.Component<UserFormProps, UserFormState> {
         super(props);
         this.state = {
             toEdit: props.user || {
-                fullName: "",
+                id: -1,
+                name: "",
                 phoneNumber: "",
                 email: ""
             }
@@ -36,7 +35,7 @@ export class UserForm extends React.Component<UserFormProps, UserFormState> {
         }
     }
 
-    handleFieldChange = (val: string, field: keyof UserModel) => {
+    handleFieldChange = (val: string, field: keyof User) => {
         this.setState(prev => {
             return { toEdit: { ...prev.toEdit, [field]: val } };
         });
@@ -49,7 +48,8 @@ export class UserForm extends React.Component<UserFormProps, UserFormState> {
         if (!this.props.isEdit) {
             this.setState({
                 toEdit: {
-                    fullName: "",
+                    id: -1,
+                    name: "",
                     email: "",
                     phoneNumber: ""
                 }
@@ -64,8 +64,8 @@ export class UserForm extends React.Component<UserFormProps, UserFormState> {
                     <TextField
                         className="UserForm__input"
                         placeholder="Full name"
-                        value={this.state.toEdit.fullName}
-                        onChange={e => this.handleFieldChange(e.target.value, "fullName")}
+                        value={this.state.toEdit.name}
+                        onChange={e => this.handleFieldChange(e.target.value, "name")}
                         required={true}
                     />
                     <TextField

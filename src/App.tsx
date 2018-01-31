@@ -1,11 +1,11 @@
 import * as React from "react";
 
-import { UserList } from "./userList/UserList";
+import UserList from "./components/userList/UserList";
 
 import "./App.css";
 
-class App extends React.Component {
-    render() {
+export default class App extends React.Component {    
+    render() {        
         return (
             <div className="App">
                 <UserList />
@@ -13,5 +13,3 @@ class App extends React.Component {
         );
     }
 }
-
-export default App;

@@ -1,4 +1,9 @@
 import * as React from "react";
+import { Dispatch } from "redux";
+import { connect } from "react-redux";
+
+import { addUser, deleteUser, saveUser, sortUser } from "../../state/user";
+
 import Paper from "material-ui/Paper";
 import Table, { TableBody, TableCell, TableHead, TableRow, TableSortLabel } from "material-ui/Table";
 import Edit from "material-ui-icons/Edit";
@@ -7,97 +12,73 @@ import Delete from "material-ui-icons/Delete";
 import { UserForm } from "../userForm/UserForm";
 
 import "./UserList.css";
-import { UserModel } from "../models/user";
 
-interface UserListProps {}
-
-interface UserListState {
-    users: UserModel[];
-    isEdit: number[];
-    order?: "asc" | "desc";
-    orderBy?: keyof UserModel;
+interface UserListProps {
+    users: User[];
+    sort: Sort;
+    onAddUser(user: User): any;
+    onDeleteUser(id: number): any;
+    onSaveUser(user: User): any;
+    onSortUser(sort: Sort): any;
 }
 
-export class UserList extends React.Component<UserListProps, UserListState> {
+interface UserListState {
+    editIndex: number;
+}
+
+class UserListComponent extends React.Component<UserListProps, UserListState> {
     constructor(props: UserListProps) {
         super(props);
+        
         this.state = {
-            users: [],
-            isEdit: []
+            editIndex: -1
         };
     }
 
-    handleAdd(user: UserModel) {
-        this.setState(prev => ({
-            users: [...prev.users, user]
-        }));
-    }
-
-    handleDelete(index: number) {
-        this.setState(prev => ({
-            ...prev,
-            users: prev.users.filter((_, i) => i !== index)
-        }));
-    }
-
-    handleEditClick(index: number) {
-        this.setState(prev => ({
-            ...prev,
-            isEdit: [...prev.isEdit, index]
-        }));
+    handleEditClick(id: number) {
+        this.setState({editIndex: id});
     }
 
     handleEditCancel(index: number) {
-        this.setState(prev => ({
-            ...prev,
-            isEdit: prev.isEdit.filter(i => i !== index)
-        }));
+        this.setState({editIndex: -1});
     }
 
-    handleEditSave(user: UserModel, index: number) {
-        this.setState(prev => {
-            const newUsers = [...prev.users];
-            newUsers[index] = user;
-            return {
-                ...prev,
-                users: newUsers,
-                isEdit: prev.isEdit.filter(i => i !== index)
-            };
-        });
+    handleSaveUser(user: User) {
+        const { onSaveUser } = this.props;
+
+        this.handleEditCancel(user.id);
+        onSaveUser(user);
     }
 
-    handleRequestSort(event: React.MouseEvent<HTMLElement>, property: keyof UserModel) {
+    handleRequestSort(event: React.MouseEvent<HTMLElement>, property: keyof User) {
+        const { sort, onSortUser } = this.props;
+
         const orderBy = property;
         let order = "desc";
 
-        if (this.state.orderBy === property && this.state.order === "desc") {
+        if (sort.orderBy === property && sort.order === "desc") {
             order = "asc";
         }
-
-        const users =
-            order === "desc"
-                ? this.state.users.sort((a, b) => (b[orderBy].toLowerCase() < a[orderBy].toLowerCase() ? -1 : 1))
-                : this.state.users.sort((a, b) => (a[orderBy].toLowerCase() < b[orderBy].toLowerCase() ? -1 : 1));
-
-        this.setState(prev => ({ ...prev, users, order, orderBy } as any));
+        onSortUser({orderBy, order} as Sort);
     }
 
     render() {
-        const { orderBy, order } = this.state;
+        const { users, sort: {order, orderBy}, onAddUser, onDeleteUser } = this.props;
+
         return (
             <div className="UserList">
                 <Paper className="UserList__addForm">
-                    <UserForm onSave={user => this.handleAdd(user)} />
+                    <UserForm onSave={user => onAddUser(user)} />
                 </Paper>
                 <Paper className="UserList__tableWrapper">
                     <Table>
                         <TableHead>
                             <TableRow>
-                                <TableCell sortDirection={orderBy === "fullName" ? order : false}>
+                                <TableCell sortDirection={orderBy === "name" ? order : false}>
                                     <TableSortLabel
-                                        active={orderBy === "fullName"}
+                                        active={orderBy === "name"}
                                         direction={order}
-                                        onClick={e => this.handleRequestSort(e, "fullName")}
+                                        onClick={e => this.handleRequestSort(e, "name")}
                                     >
                                         Name
                                     </TableSortLabel>
@@ -124,26 +105,26 @@ export class UserList extends React.Component<UserListProps, UserListState> {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {this.state.users.map(
-                                (user, index) =>
-                                    this.state.isEdit.indexOf(index) === -1 ? (
-                                        <TableRow key={index}>
-                                            <TableCell>{user.fullName}</TableCell>
+                            { users.map(
+                                user =>
+                                    this.state.editIndex !== user.id ? (
+                                        <TableRow key={user.id}>
+                                            <TableCell>{user.name}</TableCell>
                                             <TableCell>{user.email}</TableCell>
                                             <TableCell>{user.phoneNumber}</TableCell>
                                             <TableCell className="UserList__actionsCell">
-                                                <Edit color="action" onClick={() => this.handleEditClick(index)} />
-                                                <Delete color="action" onClick={() => this.handleDelete(index)} />
+                                                <Edit color="action" onClick={() => this.handleEditClick(user.id)} />
+                                                <Delete color="action" onClick={() => onDeleteUser(user.id)} />
                                             </TableCell>
                                         </TableRow>
                                     ) : (
-                                        <TableRow key={index}>
+                                        <TableRow key={user.id}>
                                             <TableCell colSpan={4}>
                                                 <UserForm
                                                     user={user}
                                                     isEdit={true}
-                                                    onSave={edited => this.handleEditSave(edited, index)}
-                                                    onCancel={() => this.handleEditCancel(index)}
+                                                    onSave={edited => this.handleSaveUser(edited)}
+                                                    onCancel={() => this.handleEditCancel(user.id)}
                                                 />
                                             </TableCell>
                                         </TableRow>
@@ -156,3 +137,32 @@ export class UserList extends React.Component<UserListProps, UserListState> {
         );
     }
 }
+
+export default connect(
+    (state: AppState) => {
+        const { data, sort } = state.users;
+
+        let users = Object.keys(data).map(id => data[id])
+
+        if (sort) {
+            users = sort.order === "desc"
+                ? users.sort((a, b) => 
+                    (String(b[sort.orderBy]).toLowerCase() < String(a[sort.orderBy]).toLowerCase() ? -1 : 1))
+                : users.sort((a, b) => 
+                    (String(a[sort.orderBy]).toLowerCase() < String(b[sort.orderBy]).toLowerCase() ? -1 : 1));
+        }
+
+        return {
+            users,
+            sort
+        }
+    },
+    (dispatch: Dispatch<AppState>) => {
+        return {
+            onAddUser: user => dispatch(addUser(user)),
+            onDeleteUser: id => dispatch(deleteUser(id)),
+            onSaveUser: user => dispatch(saveUser(user)),
+            onSortUser: sort => dispatch(sortUser(sort))
+        }
+    }
+)(UserListComponent);
