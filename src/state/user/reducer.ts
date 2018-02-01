@@ -23,7 +23,6 @@ const defaultState: UserState = {
 export function userReducer(state: UserState = defaultState, action: UserAction): UserState {
     switch (action.type) {
         case ADD_USER: {
-            console.log(action.user);
             return {
                 ...state,
                 data: {

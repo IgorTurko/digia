@@ -68,7 +68,7 @@ class UserListComponent extends React.Component<UserListProps, UserListState> {
         return (
             <div className="UserList">
                 <Paper className="UserList__addForm">
-                    <UserForm onSave={user => onAddUser(user)} />
+                    <UserForm isEdit={false} onSave={user => onAddUser(user)} />
                 </Paper>
                 <Paper className="UserList__tableWrapper">
                     <Table>
