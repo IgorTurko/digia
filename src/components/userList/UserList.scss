@@ -1,19 +1,42 @@
 .UserList {
-    &__addForm {
-        padding: 15px;
+    margin: 0 32px;
+
+    & &__header {
+        padding: 70px 0 30px;
+        color: #505050;
     }
 
-    &__tableWrapper {
+    & &__tableWrapper {
         margin-top: 30px;
     }
 
-    &__actionsCell {
+    & &__row__header > * {
+        color: #757575;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 16px;
+    }
+
+    & &__row__edit {
+        padding: 0;
+    }
+
+    & &__row__view > * {
+        padding: 24px;
+        color: #505050;
+        font-size: 16px;
+        line-height: 24px;
+        font-weight: 400;
+    }
+
+    & &__actionsCell {
         > * {
             cursor: pointer;
+            color: #909090;
         }
 
         > *:first-child {
-            margin-right: 10px;
+            margin-right: 24px;
         }
     }
 }

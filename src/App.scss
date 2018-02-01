@@ -1,4 +1,20 @@
 .App {
-    max-width: 1200px;
-    margin: 40px auto;
+    max-width: 974px;
+    margin: 0 auto;
+    background-color: #ddd;
+
+    &__header {
+        color: #fff;
+        font-size: 40px;
+        line-height: 40px;
+        padding: 32px;
+        background-color: #ADB5BD;
+        vertical-align: middle;
+        
+        & img {
+            height: 32px;
+            width: 32px;
+            padding-right: 16px;
+        }
+    }
 }

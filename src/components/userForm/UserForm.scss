@@ -3,8 +3,14 @@
     flex-direction: row nowrap;
     justify-content: space-between;
     align-items: center;
+    padding: 16px;
 
     &__input {
         margin-right: 20px !important;
+        height: 40px;
+    }
+
+    &__buttons button {
+        height: 40px
     }
 }

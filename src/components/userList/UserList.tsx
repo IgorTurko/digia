@@ -67,13 +67,14 @@ class UserListComponent extends React.Component<UserListProps, UserListState> {
 
         return (
             <div className="UserList">
+                <h1 className="UserList__header">List of participants</h1>
                 <Paper className="UserList__addForm">
                     <UserForm isEdit={false} onSave={user => onAddUser(user)} />
                 </Paper>
                 <Paper className="UserList__tableWrapper">
                     <Table>
                         <TableHead>
-                            <TableRow>
+                            <TableRow className="UserList__row__header">
                                 <TableCell sortDirection={orderBy === "name" ? order : false}>
                                     <TableSortLabel
                                         active={orderBy === "name"}
@@ -108,7 +109,7 @@ class UserListComponent extends React.Component<UserListProps, UserListState> {
                             { users.map(
                                 user =>
                                     this.state.editIndex !== user.id ? (
-                                        <TableRow key={user.id}>
+                                        <TableRow key={user.id} className="UserList__row__view">
                                             <TableCell>{user.name}</TableCell>
                                             <TableCell>{user.email}</TableCell>
                                             <TableCell>{user.phoneNumber}</TableCell>
@@ -119,7 +120,7 @@ class UserListComponent extends React.Component<UserListProps, UserListState> {
                                         </TableRow>
                                     ) : (
                                         <TableRow key={user.id}>
-                                            <TableCell colSpan={4}>
+                                            <TableCell colSpan={4} className="UserList_row__edit">
                                                 <UserForm
                                                     user={user}
                                                     isEdit={true}
